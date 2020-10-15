@@ -35,6 +35,7 @@ import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.IBinder;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -143,6 +144,12 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
+
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+            Log.i(Config.APP_LOG_TAG, "got external storage directory: " + getApplicationContext().getExternalFilesDir(null));
+        } else {
+            Log.e(Config.APP_LOG_TAG, "failed to get external storage directory");
+        }
 
         mSettings = new TerminalPreferences(this);
 
