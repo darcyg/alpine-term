@@ -470,13 +470,16 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
                 // otherwise it will be reset only after force-closing.
                 TerminalActivity.currentFontSize = -1;
 
-                if (mTermService.mWantsToStop) {
-                    // The service wants to stop as soon as possible.
-                    finish();
-                    return;
+                // Do not terminate service in debug builds.
+                // Useful for getting information about crash of qemu/socat binaries.
+                if (!BuildConfig.DEBUG) {
+                    if (mTermService.mWantsToStop) {
+                        // The service wants to stop as soon as possible.
+                        finish();
+                        return;
+                    }
+                    mTermService.terminateService();
                 }
-
-                mTermService.terminateService();
             }
 
             @Override
