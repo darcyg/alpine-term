@@ -238,7 +238,13 @@ public class TerminalService extends Service implements SessionChangedCallback {
 
         String execPath = appContext.getApplicationInfo().nativeLibraryDir;
         String runtimeDataPath = Config.getDataDirectory(appContext);
-        String workingDirPath = Objects.requireNonNull(getApplicationContext().getExternalFilesDir(null)).getAbsolutePath();
+        String workingDirPath;
+
+        if (Config.SHARED_STORAGE_SUPPORTED) {
+            workingDirPath = Objects.requireNonNull(appContext.getExternalFilesDir(null)).getAbsolutePath();
+        } else {
+            workingDirPath = appContext.getFilesDir().getAbsolutePath();
+        }
 
         environment.add("ANDROID_ROOT=" + System.getenv("ANDROID_ROOT"));
         environment.add("ANDROID_DATA=" + System.getenv("ANDROID_DATA"));
@@ -343,8 +349,10 @@ public class TerminalService extends Service implements SessionChangedCallback {
         processArgs.addAll(Arrays.asList("-device", "virtio-net-pci,netdev=vmnic0,id=virtio-net-pci0"));
 
         // Access to shared storage.
-        processArgs.addAll(Arrays.asList("-fsdev", "local,security_model=none,id=fsdev0,path=" + workingDirPath));
-        processArgs.addAll(Arrays.asList("-device", "virtio-9p-pci,fsdev=fsdev0,mount_tag=shared_storage,id=virtio-9p-pci0"));
+        if (Config.SHARED_STORAGE_SUPPORTED) {
+            processArgs.addAll(Arrays.asList("-fsdev", "local,security_model=none,id=fsdev0,path=" + workingDirPath));
+            processArgs.addAll(Arrays.asList("-device", "virtio-9p-pci,fsdev=fsdev0,mount_tag=shared_storage,id=virtio-9p-pci0"));
+        }
 
         // We need only monitor & serial consoles.
         processArgs.add("-nographic");

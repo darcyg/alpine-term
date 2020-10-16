@@ -145,10 +145,12 @@ public final class TerminalActivity extends Activity implements ServiceConnectio
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
 
-        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            Log.i(Config.APP_LOG_TAG, "got external storage directory: " + getApplicationContext().getExternalFilesDir(null));
-        } else {
-            Log.e(Config.APP_LOG_TAG, "failed to get external storage directory");
+        if (Config.SHARED_STORAGE_SUPPORTED) {
+            if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
+                Log.i(Config.APP_LOG_TAG, "got external storage directory: " + getApplicationContext().getExternalFilesDir(null));
+            } else {
+                Log.e(Config.APP_LOG_TAG, "failed to get external storage directory");
+            }
         }
 
         mSettings = new TerminalPreferences(this);

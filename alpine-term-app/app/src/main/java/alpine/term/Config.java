@@ -27,6 +27,11 @@ import android.content.Context;
 @SuppressWarnings("WeakerAccess")
 public class Config {
     /**
+     * Whether this application should support files on shared storage.
+     */
+    public static final boolean SHARED_STORAGE_SUPPORTED = true;
+
+    /**
      * Name of CD-ROM image file.
      * Must be a name of file located in assets directory.
      */
