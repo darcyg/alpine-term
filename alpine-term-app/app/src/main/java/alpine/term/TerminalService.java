@@ -285,38 +285,20 @@ public class TerminalService extends Service implements SessionChangedCallback {
         // Emulate up to 4 cores.
         processArgs.addAll(Arrays.asList("-smp", "cpus=4,cores=4,threads=1,sockets=1"));
 
-        // Set the initial RAM size to 512M and allow to extend it to 16384M
-        // by host-RAM or file based backends.
-        processArgs.addAll(Arrays.asList("-m", "512M,slots=4,maxmem=16384M"));
-
         // Set TB cache size and add another 512 MB RAM slot if applicable.
         ActivityManager am = (ActivityManager) appContext.getSystemService(Context.ACTIVITY_SERVICE);
         ActivityManager.MemoryInfo memInfo = new ActivityManager.MemoryInfo();
         if (am != null) {
             am.getMemoryInfo(memInfo);
-
-            if (memInfo.totalMem > (1600 * 1048576L)) {
-                // Total memory is actually lower than RAM chip's value.
-                // Picking 1600 MiB as safe value for check whether host
-                // has >= 2 GB of RAM.
-                //
-                // QEMU allocates memory for virtual machine and TCG translation
-                // block cache. We need to be sure that allocation is below the
-                // "safe limit" of 50% of the host RAM.
-                //
-                // Here usage will be: 512M (def) + 512M (plug) + 512M (TB cache) = 1536M.
-                processArgs.addAll(Arrays.asList("-object", "memory-backend-ram,id=mem0,size=512M"));
-                processArgs.addAll(Arrays.asList("-device", "pc-dimm,id=dimm0,memdev=mem0"));
-                processArgs.addAll(Arrays.asList("-accel", "tcg,tb-size=512"));
-            } else {
-                // Host has < 2 GB of RAM.
-                // Total usage is: 512M (def) + 128M (TB cache) = 640M.
-                processArgs.addAll(Arrays.asList("-accel", "tcg,tb-size=128"));
-            }
+            // 32% of host memory will be used for QEMU emulated RAM.
+            int safeRam = (int) (memInfo.totalMem * 0.32 / 1048576);
+            // 8% of host memory will be used for QEMU TCG buffer.
+            int safeTcg = (int) (memInfo.totalMem * 0.08 / 1048576);
+            processArgs.addAll(Arrays.asList("-m", safeRam + "M", "-accel", "tcg,tb-size=" + safeTcg));
         } else {
-            // If cannot detect host RAM size, attempt to use the minimal safe
-            // value (default 512M).
-            processArgs.addAll(Arrays.asList("-accel", "tcg,tb-size=128"));
+            // Fallback.
+            Log.e(Config.APP_LOG_TAG, "failed to determine size of host memory");
+            processArgs.addAll(Arrays.asList("-m", "256M", "-accel", "tcg,tb-size=64"));
         }
 
         // Balloon device for dynamic RAM allocation.

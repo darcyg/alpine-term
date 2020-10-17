@@ -274,27 +274,10 @@ command arguments.
 |Secondary HDD device     |`scsi-hd1` |
 |Network interface card   |`vmnic0`   |
 
-##### Adding more RAM
+##### Limiting RAM usage
 
-QEMU is configured to emulate 4 DIMM slots with support of total RAM up to
-16 GiB. By default, it provides a 512 MiB RAM and, if host device has 3 GiB
-or more, it will use one of the emulated slots to add another 512 MiB. So
-Alpine Term will provide only 512M/1024M without manual configuration.
-
-You can add more RAM if needed by using the free slots. Here is an example
-for adding a 1 GiB of memory through QEMU monitor:
-
-```
-object_add memory-backend-ram,id=mem1,size=1024M
-device_add pc-dimm,id=dimm1,memdev=mem1
-```
-
-Do not specify more RAM than the host can provide. In fact, only 50-55% of
-total allocated RAM by QEMU are safe. Specifying higher values will likely
-result in Alpine Term being force-closed by the Android OS.
-
-Dynamically limiting of used host RAM is also possible. This can be done
-through monitor command. See an example of limiting RAM usage to 350M:
+You can limit RAM usage by configuring VirtIO Balloon device through QEMU
+monitor. See an example below how to limit memory usage to 350 MiB:
 
 ```
 balloon 350
@@ -305,16 +288,7 @@ de-allocate host RAM and update visible memory size for the virtual machine.
 In other cases virtual machine may not release used memory or do that
 partially.
 
-You can increase the memory allocation by specifying the higher value,
-however you will not be able use values higher than virtual machine is
-configured to use. So if QEMU is configured to use 2048M of memory, values
-beyond the "2048" will not work.
-
-Dynamically changing RAM allocation is implemented through balloon device
-and requires cooperation from the guest operating system. It must provide
-a driver for this device. Kernel supplied with Alpine Linux has support
-for balloon device. Custom operating systems or kernels are not guaranteed
-to work properly with it.
+**Note**: some kernels or custom operating system may not support this feature.
 
 ##### Backing up the HDD image
 
