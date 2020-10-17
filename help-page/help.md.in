@@ -457,6 +457,10 @@ accessible at
 /storage/self/primary/Android/data/alpine.term/files
 ~~~~
 
+**Note**: sharing files may not be possible through this way if host
+shared storage is not available. That is rare cases however, like when
+shared storage is actually removable SD-CARD which is not mounted.
+
 **Warning**: if you want to uninstall the Alpine Term, do not forget
 to move files from the host shared directory to a different place.
 Otherwise, all its data will be lost.

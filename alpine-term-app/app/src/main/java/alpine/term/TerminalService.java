@@ -31,6 +31,7 @@ import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.Binder;
 import android.os.Build;
+import android.os.Environment;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.util.Log;
@@ -238,12 +239,18 @@ public class TerminalService extends Service implements SessionChangedCallback {
 
         String execPath = appContext.getApplicationInfo().nativeLibraryDir;
         String runtimeDataPath = Config.getDataDirectory(appContext);
-        String workingDirPath;
 
-        if (Config.SHARED_STORAGE_SUPPORTED) {
+        String workingDirPath;
+        if (Config.SHARED_STORAGE_SUPPORTED && Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
             workingDirPath = Objects.requireNonNull(appContext.getExternalFilesDir(null)).getAbsolutePath();
         } else {
-            workingDirPath = appContext.getFilesDir().getAbsolutePath();
+            workingDirPath = appContext.getFilesDir().getAbsolutePath() + "/workdir";
+            File wd = new File(workingDirPath);
+            if (!wd.exists()) {
+                if (!wd.mkdir()) {
+                    Log.e(Config.APP_LOG_TAG, "directory " + workingDirPath + " was not created");
+                }
+            }
         }
 
         environment.add("ANDROID_ROOT=" + System.getenv("ANDROID_ROOT"));
