@@ -16,8 +16,8 @@ android {
         applicationId "alpine.term"
         minSdkVersion 24
         targetSdkVersion 29
-        versionCode 1302
-        versionName "13.2-standard"
+        versionCode 1400
+        versionName "14.0-standard"
 
         archivesBaseName = "alpine-term-v$versionName"
 
