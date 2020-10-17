@@ -683,7 +683,7 @@ page-break-after: avoid;
 <p>You can limit RAM usage by configuring VirtIO Balloon device through QEMU monitor. See an example below how to limit memory usage to 350 MiB:</p>
 <pre><code>balloon 350</code></pre>
 <p>If guest operating system uses less memory than specified value, QEMU will de-allocate host RAM and update visible memory size for the virtual machine. In other cases virtual machine may not release used memory or do that partially.</p>
-<p><strong>Note</strong>: some kernels or custom operating system may not support this feature.</p>
+<p>Some kernels or custom operating systems may not support this feature.</p>
 <h5 id="backing-up-the-hdd-image">Backing up the HDD image</h5>
 <p>Use QEMU monitor to back up the operating system image. You can do this by executing the next command:</p>
 <pre><code>drive_backup -f -c hd0 ./backup.qcow2 qcow2</code></pre>
@@ -915,7 +915,7 @@ page-break-after: avoid;
 <h4 id="sharing-files-between-host-and-vm">Sharing files between host and VM</h4>
 <p>The Alpine Term application maintains a directory on Android storage for sharing files between host and virtual machine. Inside the virtual machine this directory is mounted on ‘/mnt/shared’ and on the host it is usually accessible at</p>
 <div class="sourceCode" id="cb6" data-startFrom="1"><pre class="sourceCode numberSource numberLines"><code class="sourceCode"><a class="sourceLine" id="cb6-1" title="1">/storage/self/primary/Android/data/alpine.term/files</a></code></pre></div>
-<p><strong>Note</strong>: sharing files may not be possible through this way if host shared storage is not available. That is rare cases however, like when shared storage is actually removable SD-CARD which is not mounted.</p>
+<p>Sharing files may not be possible through this way if host shared storage is not available. That is rare cases however, like when shared storage is actually removable SD-CARD which is not mounted.</p>
 <p><strong>Warning</strong>: if you want to uninstall the Alpine Term, do not forget to move files from the host shared directory to a different place. Otherwise, all its data will be lost.</p>
 <h4 id="shutting-down-the-vm">Shutting down the VM</h4>
 <p>You can shut down the virtual machine and exit application with these ways:</p>
